@@ -1,0 +1,217 @@
+#include<iostream>
+using namespace std;
+class Node
+{
+private:
+int element;
+Node* nextptr;
+Node* prevptr;
+public:
+Node(int i = 0, Node* next = nullptr, Node* prev = nullptr)
+{
+element = i;
+nextptr = next;
+prevptr = prev;
+}
+int retrive()
+{
+return element;
+}
+Node* ret_nextptr()
+{
+return nextptr;
+}
+Node* ret_preptr()
+{
+return prevptr;
+}
+void setnext(Node* P)
+{
+nextptr = P;
+}
+void setprev(Node* p)
+{
+prevptr = p;
+}
+friend class Doubly_linked;
+};
+class Doubly_linked
+{
+private:
+Node* listhead;
+Node* tail;
+public:
+bool empty()
+{
+return listhead == nullptr;
+}
+Node* head()
+{
+return listhead;
+}
+int size()
+{
+int size = 0;
+for (Node* p = listhead; p != nullptr; p = p->nextptr)
+{
+size++;
+}
+return size;
+}
+int count(int i)
+{
+int c = 0;
+for (Node* p = listhead; p != nullptr; p = p->nextptr)
+{
+if (p->retrive() == i)
+{
+c++;
+}
+}
+return c;
+}
+int front()
+{
+if (empty())
+{
+throw"Underflow";
+}
+
+return listhead->retrive();
+}
+Doubly_linked() : listhead(nullptr), tail(nullptr) {}
+void display()
+{
+for (Node* p = listhead; p != nullptr; p = p->nextptr)
+{
+cout << p->retrive() << "   ";
+}
+}
+void push_front(int n)
+{
+Node* newN = new Node(n, listhead, nullptr);
+if (empty())
+{
+listhead = tail = newN;
+}
+else
+{
+listhead->prevptr = newN;
+listhead = newN;
+}
+}
+void push_end(int n)
+{
+
+Node* newN = new Node(n, nullptr, tail);
+if (empty())
+{
+listhead = tail = newN;
+}
+else
+{
+tail->nextptr = newN;
+tail = newN;
+}
+}
+void insert(int n, int pos)
+{
+cout << "\nInserting element " << n << " before element " << pos << ":\n";
+
+if (empty()) {
+push_front(n);
+return;
+}
+Node* p = listhead;
+while (p != nullptr && p->retrive() != pos)
+p = p->nextptr;
+
+
+if (p == nullptr) {
+push_end(n);
+return;
+}
+
+if (p == listhead) {
+push_front(n);
+return;
+}
+
+Node* ne = new Node(n, p, p->prevptr);
+
+p->prevptr->nextptr = ne;
+p->prevptr = ne;
+}
+
+void pop_front()
+{
+if (empty())
+throw "Underflow";
+
+Node* ptr = tail;
+if (listhead == nullptr)
+{
+listhead = tail = nullptr;
+}
+else
+{
+listhead = listhead->nextptr;
+listhead->prevptr = nullptr;
+}
+}
+void pop_end()
+{
+if (empty())
+throw "Underflow";
+
+Node* ptr = tail;
+if (listhead == nullptr)
+{
+listhead = tail = nullptr;
+}
+else
+{
+tail = tail->prevptr;
+tail->nextptr = nullptr;
+}
+
+delete ptr;
+}
+friend class Stack;
+};
+class Stack
+{
+private:
+Doubly_linked st;
+public:
+void push(int n)
+{
+st.push_front(n);
+}
+void pop()
+{
+st.pop_front();
+}
+void frontstk()
+{
+cout << "\nElement at the front is : " << st.front();
+}
+void display_stack()
+{
+st.display();
+}
+};
+int main()
+{
+Stack s1;
+s1.push(33);
+s1.push(34);
+s1.push(35);
+s1.push(36);
+s1.display_stack();
+cout << "\nAfter poping at the front\n";
+s1.pop();
+s1.display_stack();
+s1.frontstk();
+
+}
