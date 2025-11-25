@@ -112,7 +112,10 @@ public:
     int front() const
     {
         if (empty())
-            throw runtime_error("List is empty!");
+            {
+              cout<<"List is empty";
+              return;
+            }
 
         return head_list->element;
     }
