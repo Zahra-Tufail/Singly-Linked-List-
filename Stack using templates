@@ -1,0 +1,221 @@
+#include <iostream>
+using namespace std;
+
+template <class T>
+class Node
+{
+private:
+    T element;
+    Node* nextptr;
+
+public:
+    Node(T i = 0, Node* pt = nullptr)
+    {
+        element = i;
+        nextptr = pt;
+    }
+    T retrieve() const
+    {
+        return element;
+    }
+    template <class U>
+    friend class List;
+};
+
+template <class T>
+class List
+{
+private:
+    Node<T>* head_list = nullptr;
+
+public:
+
+    bool empty() const
+    {
+        return head_list == nullptr;
+    }
+
+    void push_front(T n)
+    {
+        head_list = new Node<T>(n, head_list);
+    }
+
+    void pop_front()
+    {
+        if (empty())
+        {
+            cout << "\nList is empty";
+            return;
+        }
+
+        Node<T>* temp = head_list;
+        T value = temp->element;
+
+        head_list = head_list->nextptr;
+        delete temp;
+
+        cout << "\nElement " << value << " deleted from front.";
+    }
+
+    void push_end(T n)
+    {
+        Node<T>* newNode = new Node<T>(n);
+
+        if (empty())
+        {
+            head_list = newNode;
+            return;
+        }
+
+        Node<T>* ptr = head_list;
+        while (ptr->nextptr != nullptr)
+        {
+            ptr = ptr->nextptr;
+        }
+        ptr->nextptr = newNode;
+    }
+
+    void pop_end()
+    {
+        if (empty())
+        {
+            cout << "\nList is empty";
+            return;
+        }
+
+        if (head_list->nextptr == nullptr)
+        {
+            cout << "\nOnly one node. Deleting: " << head_list->element;
+            delete head_list;
+            head_list = nullptr;
+            return;
+        }
+
+        Node<T>* ptr = head_list;
+        while (ptr->nextptr->nextptr != nullptr)
+        {
+            ptr = ptr->nextptr;
+        }
+
+        cout << "\nDeleting last element: " << ptr->nextptr->element;
+        delete ptr->nextptr;
+        ptr->nextptr = nullptr;
+    }
+
+    void display() const
+    {
+        cout << "\nElements in the list:\n";
+        for (Node<T>* ptr = head_list; ptr != nullptr; ptr = ptr->nextptr)
+        {
+            cout << ptr->element << "   ";
+        }
+        cout << endl;
+    }
+
+    T front() const
+    {
+        if (empty())
+        {
+            cout << "List is empty";
+            return T();  // return default T
+        }
+
+        return head_list->element;
+    }
+
+    void size()
+    {
+        int count = 0;
+        for (Node<T>* ptr = head_list; ptr != nullptr; ptr = ptr->nextptr)
+        {
+            count++;
+        }
+        cout << "\nTotal elements in list: " << count;
+    }
+
+    void count(T i)
+    {
+        int c = 0;
+        for (Node<T>* ptr = head_list; ptr != nullptr; ptr = ptr->nextptr)
+        {
+            if (ptr->element == i)
+                c++;
+        }
+        cout << "\nThe number " << i << " appears " << c << " times in the list";
+    }
+
+    void erase(T x)
+    {
+        if (empty()) return;
+
+        while (head_list != nullptr && head_list->element == x)
+        {
+            Node<T>* temp = head_list;
+            head_list = head_list->nextptr;
+            delete temp;
+        }
+
+        Node<T>* ptr = head_list;
+        while (ptr != nullptr && ptr->nextptr != nullptr)
+        {
+            if (ptr->nextptr->element == x)
+            {
+                Node<T>* temp = ptr->nextptr;
+                ptr->nextptr = temp->nextptr;
+                delete temp;
+            }
+            else
+            {
+                ptr = ptr->nextptr;
+            }
+        }
+
+        cout << "\nAll occurrences of " << x << " deleted.";
+    }
+
+    template <class U>
+    friend class Stack;
+};
+
+template <class T>
+class Stack
+{
+private:
+    List<T> st;
+
+public:
+    void push(T n)
+    {
+        st.push_front(n);
+    }
+    void pop()
+    {
+        st.pop_front();
+    }
+    void frontstk()
+    {
+        cout << "\nElement at the front is : " << st.front();
+    }
+    void display_stack()
+    {
+        st.display();
+    }
+};
+
+int main()
+{
+    Stack<float> s1;
+    s1.push(33.3);
+    s1.push(34.5);
+    s1.push(35.6);
+    s1.push(36.5);
+
+    s1.display_stack();
+
+    cout << "\nAfter popping at the front\n";
+    s1.pop();
+
+    s1.display_stack();
+
+    s1.frontstk();
+}
