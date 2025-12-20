@@ -4,7 +4,7 @@ using namespace std;
 template <class T>
 class Node
 {
-private:
+protected:
     T element;
     Node* nextptr;
 
@@ -25,6 +25,7 @@ public:
     }
     template <class U>
     friend class List;
+  
 };
 
 template <class T>
@@ -64,7 +65,7 @@ public:
         head_list = head_list->nextptr;
         delete temp;
 
-        cout << "\nElement " << value << " deleted from front.";
+        
     }
 
     void push_end(T n)
@@ -182,6 +183,7 @@ public:
 
         cout << "\nAll occurrences of " << x << " deleted.";
     }
+   
 };
 
 template <class T>
@@ -220,12 +222,13 @@ public:
         cout << "\nShowing the queue!\n";
         li.display();
     }
+    
 };
 
 template <class t>
 class Simple_tree
 {
-private:
+protected:
     t element; // the number we have stored 
     Simple_tree* parent_node;
     List <Simple_tree*> children; //why we have used *with simple_tree?
@@ -255,9 +258,9 @@ public:
         Node<Simple_tree*>* ptr = children.head();
         for (int i = 1; i < n; i++)
         {
-            ptr = ptr->nextptr;
+            ptr = ptr->next();
         }
-        return ptr->retrieve();
+        return ptr->retrieve_n();
     }
 
     int degree()// total number of chldrens
@@ -295,7 +298,6 @@ public:
         return h;
 
     }
-
     void insert(t b) // a new node as a child
     {
         children.push_end(new Simple_tree(b, this));
@@ -311,7 +313,6 @@ public:
         tree->parent_node = this; // makes the child of the current parrent n the tree
         children.push_end(tree);
     }
-
     void detach()
     {
         if (is_root())
@@ -324,6 +325,7 @@ public:
 
     void depth_first_traversal() //deep down going to childs 
     {
+       
         cout << retrive() << "\t";
         for (Node<Simple_tree*>* ptr = children.head(); ptr != nullptr; ptr = ptr->next())
         {
@@ -333,19 +335,43 @@ public:
 
     void breadth_first_traversal() 
     {
+        cout << "\n Breadth First Traversal : ";
         Queue<Simple_tree*> q;
         q.push(this);
 
         while (!q.empty()) {
             Simple_tree* node = q.top();
             q.pop();
-            cout << node->retrive() << " ";
-
+            cout << node->retrive();
             for (Node<Simple_tree*>* ptr = node->children.head(); ptr != nullptr; ptr = ptr->next())
             {
                 q.push(ptr->retrieve_n());
             }
         }
     }
-
 };
+int main()
+{
+    Simple_tree<char> NameTree('Z');
+    NameTree.insert('A');
+    NameTree.insert('H');
+   //first Inserting one side 
+    Simple_tree<char>*NameTree2 =new Simple_tree<char>('R');
+    NameTree2->insert('F');
+    Simple_tree<char>*NameTree3 = new Simple_tree<char>('A');
+    NameTree3->insert('A');
+    NameTree.child(0)->attatch(NameTree2);
+    NameTree.child(0)->attatch(NameTree3);
+
+   // Inserting another side 
+    Simple_tree<char>* NameTree4 = new Simple_tree<char>('T');
+    NameTree2->insert('I');
+    Simple_tree<char>* NameTree5 = new Simple_tree<char>('U');
+    NameTree3->insert('L');
+    NameTree.child(1)->attatch(NameTree4);
+    NameTree.child(1)->attatch(NameTree5);
+    cout << "\n Depth First Traversal : ";
+    NameTree.depth_first_traversal();
+    NameTree.breadth_first_traversal();
+   cout<<"\n Height :"<< NameTree.height();
+}
