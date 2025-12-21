@@ -1,0 +1,291 @@
+#include<iostream>
+using namespace std;
+template <class t>
+class binary_search_node
+{
+protected:
+    t element;
+    binary_search_node* left_tree;
+    binary_search_node* right_tree;
+public:
+    binary_search_node(T obj)
+    {
+        element = obj;
+        left_tree = nullptr;
+        right_tree = nullptr;
+    }
+
+    T retrieve() const
+    {
+        return element;
+    }
+    
+    void setdata(t obj)
+    {
+        element = obj;
+    }
+
+    void setleft(binary_search_node* obj)
+    {
+        left_tree = obj;
+    }
+
+    void setright(binary_search_node* obj)
+    {
+        right_tree = obj;
+    }
+
+    binary_search_node* left()
+    {
+        return left_tree;
+    }
+
+    binary_search_node* right()
+    {
+        return right_tree;
+    }
+
+    bool is_leaf()
+    {
+        return (empty()!&& left()->empty() && right()->empty());
+    }
+
+    bool empty()
+    {
+        return (this == nullptr)
+    }
+
+    int size()
+    {
+        return empty() ? 0 : 1 + left()->size() + right()->size();
+    }
+
+    int height()
+    {
+        return empty() ? -1 : 1 + std::max(left()->height(), right()->height());
+    }
+
+    void clear(binary_search_node* to_this)
+    {
+        if (empty())
+        {
+            return;
+        }
+        left()->clear(left_tree);
+        right()->clear(right_tree);
+        delete this;
+        to_this = nullptr; // for making the pointer null that was pointing to the tree that is to be deleted  
+    }
+
+    binary_search_node front()//minimum object
+    {
+        if (empty())
+        {
+            throw"Underflow";
+        }
+        return (left()->empty()) ? retrieve() : left()->front();
+        // it will continue to go to the left child untill the left most child is reched which is the minimum elemnt in the list
+        // as minimun values are stored at left side in BST
+    }
+
+    binary_search_node end()//maxium object
+    {
+        if (empty())
+        {
+            throw"Underflow";
+        }
+        return (right()->empty()) ? retrieve() : right()->end();
+        //will continue and reach the largest value in BST placed at the right most corner
+    }
+
+    bool search(t obj)
+    {
+        if (empty())
+        {
+            return false;
+        }
+        if (obj > this->retrieve())
+        {
+            return (right()->retrieve() == obj) ?true : right()->search();
+        }
+        else if (obj < this->retrieve())
+        {
+            return(left()->retrieve() == obj) ? true : left()->search();
+        }
+        else if (retrieve() == obj)
+        {
+            return true;
+        }
+
+    }
+
+    //presise version from slides
+    bool find(t obj)
+    {
+        if (empty())
+        {
+            return false;
+        }
+        else if (retrieve() == obj) 
+        {
+            return true 
+        }
+        else
+        {
+            return(obj < retrieve()) ? left()->find(obj) : right()->find(obj);
+        }
+    }
+
+    bool insert(t obj,binary_search_node *ptr_to_this)
+    {// ptr_to_this shows the location where the node is to be inserted 
+        if (empty())
+        {
+            //if its empty then insert any where without looking left or right
+            ptr_to_this = new binary_search_node<t>(obj);
+            return true;
+        }
+        else if (obj < retrieve())
+        {
+            left()->insert(obj, left_tree);
+        }
+        else if (obj > retrieve())
+        {
+            right()->insert(obj, right_tree);
+        }
+        else
+        {
+            return false;
+            //means no such elemnt can be inserted as may be its out of range or it alreaddy exits in BST (obj==element)
+        }
+    }
+
+    bool erase(t obj, binary_search_node* ptr_to_this)
+    {
+        if (empty())
+        {
+            retrurn false;
+        }
+        else if (obj == retrieve())
+        {
+            if (is_leaf())//leaf node
+            {
+                ptr_to_this = nullptr;
+                delete this;
+            }
+            else if (!left()->empty() && !right()->empty())
+            {//full node
+                element = right()->front();//replace the elemnt with the smallest value from the right side 
+                right()->erase(retrieve(), right_tree);
+            }
+            else //onl one node and checking either its at left or right
+            {
+                ptr_to_this = (!left()->empty()) ? left() : right();
+                delete this;
+            }
+            return true;
+        }
+        else if (obj < retrieve()) //checking if the node that is to be deleteed exits on any side 
+        {
+            return left()->erase(obj,left_tree);
+        }
+        else
+        {
+            return right()->erase(obj, right_tree);
+        }
+    }
+};
+template <class t>
+class Binary_search_tree
+{
+private:
+    binary_search_node<t>* root_node;
+public:
+    Binary_search_tree()
+    {
+        root_node = nullptr;
+    }
+    ~Binary_search_tree()
+    {
+        clear();
+    }
+    
+    binary_search_node* root()
+    {
+        return root_node;
+    }
+
+    bool empty()
+    {
+        return (root_node == nullptr);
+    }
+
+    int size_b()
+    {
+        return (root()==nullptr) ? 0 : root->size_b();
+    }
+
+    int height_b()
+    {
+        return (empty()) ? -1 : root->height_b();
+    }
+
+    t front()
+    {
+        return root()->front();
+    }
+
+    t back()
+    {
+        return root()->end();
+    }
+
+    int count(t obj)
+    {
+
+    }
+
+    void clear()
+    {
+        root->clear(root_node);
+    }
+
+    bool insert(t obj)
+    {
+        return root()->insert(obj, root_node);
+    }
+    bool erase(t obj)
+    {
+        return root()->erase(obj, root_node);
+    }
+
+    //traversals
+    void inorder(binary_search_node* r) //left(1) root(+) right(2) -> (1 + 2)
+    {
+        if (r != nullptr)
+        {
+            inorder(r->left());
+            cout << "\n Root node :" << r->retrieve();
+            inorder(r->right());
+        }
+    }
+
+    void postorder(binary_search_node* r) //left(1) right(2)  root(+)  -->  12+
+    {
+        if (r != nullptr)
+        {
+            postorder(r->left());
+            postorder(r->right());
+            cout << "\n Root node :" << r->retrieve();
+        }
+    }
+
+    void preoder(binary_search_node* r) //root(+) left(1) right(2) --> +12
+    {
+        if (r != nullptr)
+        {
+            cout << "\n Root node :" << r->retrieve();
+            postorder(r->left());
+            postorder(r->right());
+        }
+    }
+};
